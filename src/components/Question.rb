@@ -10,6 +10,6 @@ class Question
   end
 
   def compare_answer(answer)
-    answer == @question_answer
+    answer.to_i == @question_answer
   end
 end
