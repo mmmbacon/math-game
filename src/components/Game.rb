@@ -3,23 +3,31 @@ class Game
   attr_accessor :player_2
 
   def initialize
-    @player_1 = Player.new()
-    @player_2 = Player.new()
+    @initialized = true
+    @players = []
+    @players[0] = Player.new(3)
+    @players[1] = Player.new(3)
     @current_player = 0
+    @other_player = 1
     @running = false
     @round = 1
   end
 
   def reset
-    @player1.lives = 0
-    @player2.lives = 0
-    @game_questions = @game_questions.shuffle
+    players.each { |player| player.reset }
     self.start
   end
 
   def start
+    puts ""
+    puts "Welcome to the math tots training ground!"
     @running = true
     self.game_loop
+  end
+
+  def generate_scores(player1, player2)
+    "P1: #{player1.lives}/#{player1.max_lives}"\
+    " vs P2: #{player2.lives}/#{player2.max_lives}"\
   end
 
   def game_loop
@@ -27,17 +35,46 @@ class Game
     while @running == true do
       question = Question.new()
       @current_player = @round % 2 === 0 ? 1 : 0
-      puts "Player " + @current_player.to_s + ": " + question.question_string
-      gets.chomp()
+      @other_player = @round % 2 === 0 ? 0 : 1
+      puts "Round #{@round}... Begin!"
+      puts "Player #{@current_player + 1}: #{question.question_string} "
+      answer = gets.chomp
+
+      #Compare answer
+      if(!question.compare_answer(answer))
+        puts "Seriously? No!"
+        @players[@current_player].lose_life
+      end
+
+      #Check to see if anyone has lost the game
+      if(@players[@current_player].lives == 0)
+        @running = false
+        break
+      end
+
+      #Generate score and start new round
+      puts generate_scores(@players[0], @players[1])
       @round += 1
-      #evaluate()
-      #if players lives have not dropped to zero...
-      #puts #result
-      #else.... 
-      #@running = false
+      puts "--- NEW TURN ---"
     end
-    #Player loses..  play again?... reset
-    #if input = quit then exit
+
+    puts "Player #{@other_player + 1} wins with a score of #{@players[@other_player].lives}/#{@players[@other_player].max_lives}"
+    
+    while @initialized
+      puts "Play Again? Y/N"
+      input = gets.chomp
+      if(input.downcase == "y")
+        self.start
+      elsif(input.downcase == "n")
+        @initialized = false
+        break
+      else 
+        puts "Not a valid input. Please try again."
+      end
+    end
+
+    exit
+
   end
 
 end
