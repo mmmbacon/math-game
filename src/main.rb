@@ -2,4 +2,5 @@ require './components/Game'
 require './components/Player'
 require './components/Question'
 
-rgame = Game.new()
+game = Game.new()
+game.start
