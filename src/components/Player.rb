@@ -1,4 +1,8 @@
 class Player
+
+  attr_reader :lives
+  attr_reader :max_lives
+
   def initialize(max_lives)
     @max_lives = max_lives
     @lives = max_lives
